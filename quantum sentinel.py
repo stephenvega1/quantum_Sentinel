@@ -2,8 +2,8 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, execute, 
 from qiskit.providers.aer import noise
 import numpy as np
 
-# Define the number of qubits and classical bits (including tripwire and kill qubits)
-number_of_qubits = 12  # Additional qubits for tripwire and kill mechanism
+# Define the number of qubits and classical bits (including tripwire and measurement qubits)
+number_of_qubits = 12  # Additional qubits for tripwire and measurement mechanism
 number_of_classical_bits = 12
 
 # Create quantum registers and classical registers
@@ -12,14 +12,14 @@ cregs = ClassicalRegister(number_of_classical_bits, name="c")
 circuit = QuantumCircuit(qregs, cregs)
 
 # Setup one-way entry mechanism (simplified)
-for i in range(9):  # Leaving last 3 for tripwire and kill qubits
+for i in range(9):  # Leaving last 3 for tripwire and measurement qubits
     circuit.h(qregs[i])
 
 # Tripwire: Detection mechanism
 circuit.cx(qregs[8], qregs[9])  # Assuming qregs[9] is a tripwire qubit
 
-# Entanglement mechanism for neutralizing malware
-circuit.cx(qregs[9], qregs[10])  # Entangle tripwire with kill qubits
+# Entanglement mechanism for measurement when malware trips the wire
+circuit.cx(qregs[9], qregs[10])  # Entangle tripwire with measurement qubits
 circuit.cx(qregs[9], qregs[11])
 
 # Self-fixing mechanism using reversible computing
@@ -32,7 +32,7 @@ for i in range(9):
     circuit.cx(qregs[(i+1) % 9], qregs[i])
     circuit.h(qregs[i])
 
-# Measurement for analysis, including tripwire and kill qubits
+# Measurement for analysis, including tripwire and measurement qubits
 circuit.measure(qregs, cregs)
 
 # Simulate the quantum circuit with noise (simplified noise model)
